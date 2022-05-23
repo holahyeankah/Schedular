@@ -41,6 +41,10 @@ namespace Schedular
             Configuration.Bind("Authentication", authConfig);
             services.AddSingleton(authConfig);
 
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
 
             services.AddDbContext<SchedularDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -102,6 +106,7 @@ namespace Schedular
                app.UseSession();
 
             app.UseAuthorization();
+            app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {
