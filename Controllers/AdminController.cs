@@ -378,11 +378,11 @@ namespace SjxLogistics.Controllers
         }
 
 
-        [HttpGet("getAllUsers")]
-        public async Task<IActionResult> GetAllUsers()
+        [HttpGet("getUserByEmail/ {Email}")]
+        public async Task<IActionResult> GetAllUsers( string Email)
         {
-            var response = new ServiceResponses<DbSet<Users>>(); ;
-            var user = _context.User;
+            var response = new ServiceResponses<Users>(); ;
+            var user = await _context.User.FirstOrDefaultAsync(i => i.Email == Email);
 
             if (user != null)
             {
