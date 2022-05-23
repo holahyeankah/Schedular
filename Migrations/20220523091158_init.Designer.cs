@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Schedular.Migrations
 {
     [DbContext(typeof(SchedularDbContext))]
-    [Migration("20220428124258_vat")]
-    partial class vat
+    [Migration("20220523091158_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
