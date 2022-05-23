@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Schedular.Models;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +9,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using MailSettings = Schedular.Models.MailSettings;
 
 namespace Schedular.Interface
 {
@@ -18,25 +21,19 @@ namespace Schedular.Interface
             _mailSettings = mailSettings.Value;
         }
 
-       public void SendMail(string body, string email)
+        public async Task<Response> SendMail(GridEmailRequest request)
         {
-            MailMessage message = new MailMessage(_mailSettings.Mail, email);
-            message.Subject = $"Welcome to{_mailSettings.DisplayName}";
-            message.IsBodyHtml = true;
-            message.Body = body;
-            message.BodyEncoding = Encoding.UTF8;
-            try
-            {
-                SmtpClient smtp = new SmtpClient(_mailSettings.Host, _mailSettings.Port);
-                smtp.Credentials = new NetworkCredential(_mailSettings.Mail, _mailSettings.Password);
-                smtp.EnableSsl = false;
-                smtp.UseDefaultCredentials = false;
-                smtp.Send(message);
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
+            var apiKey = _mailSettings.Key;
+            var client = new SendGridClient(apiKey);
+
+            var sendGridMessage = new SendGridMessage();
+            sendGridMessage.SetFrom(_mailSettings.email, "sjx-Logistics");
+            sendGridMessage.AddTo(request.Email);
+            sendGridMessage.SetTemplateId(request.templateIds);
+            sendGridMessage.SetTemplateData(request);
+            var response = await client.SendEmailAsync(sendGridMessage);
+            return response;
+
         }
     }
 }

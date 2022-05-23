@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Schedular.Interface;
+using Schedular.Models;
 using Schedular.Request;
 using Schedular.Static_classes;
 using SjxLogistics.Components;
@@ -76,7 +77,7 @@ namespace SjxLogistics.Controllers
         {
 
             var response = new ServiceResponses<Users>();
-            //string randomPassword = GeneratePassword(10);
+            string randomPassword = GeneratePassword(10);
             string tag = GetnewId();
             Users usersEmail = _context.User.FirstOrDefault(i => i.Email == request.Email);
             if (usersEmail != null)
@@ -92,13 +93,13 @@ namespace SjxLogistics.Controllers
             {
                 if (usersEmail == null)
                 {
-                    string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-                    if(request.Appearance == true)
-                    {
-                        string generateString = GenerateString(10);
-                        //request.virtualCodes = generateString;
-                        request.virtualCodes = $"meet.google.com/{generateString}";
-                    }
+                    string passwordHash = BCrypt.Net.BCrypt.HashPassword(randomPassword);
+                    //if(request.Appearance == true)
+                    //{
+                    //    string generateString = GenerateString(10);
+                    //    //request.virtualCodes = generateString;
+                    //    request.virtualCodes = $"meet.google.com/{generateString}";
+                    //}
                  
                     Users requestUser = new()
                     {
@@ -113,7 +114,7 @@ namespace SjxLogistics.Controllers
                         Province = request.Province,
                         Parish = request.Parish,
                         ProgramType = request.ProgramType,
-                        Password = passwordHash,
+                        Password = randomPassword,
                         Appearance= request.Appearance,
                         Role = Role.ChurchAdmin,
                         tagCode = tag,
@@ -123,7 +124,17 @@ namespace SjxLogistics.Controllers
                     };
                     await _context.User.AddAsync(requestUser);
                     await _context.SaveChangesAsync();
-                  
+
+
+                    GridEmailRequest emailRequest = new()
+                    {
+                        Email= request.Email,
+                        Password= randomPassword,
+                        Name = request.SurName + request.FirstName
+                    };
+
+                    await _mailservice.SendMail(emailRequest);
+
                     string token = _accessTokkenGenerator.GenerateToken(requestUser);
 
                     response.Messages = "Successful";
