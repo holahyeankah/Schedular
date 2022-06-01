@@ -43,9 +43,6 @@ namespace SjxLogistics.Controllers
 
         {  '1', '2', '3', '4', '5', '6', '7', '8', '9','0'};
 
-
-
-
         private dynamic GenerateOtp(int max)
         {
             while (value.Length < max)
@@ -56,7 +53,7 @@ namespace SjxLogistics.Controllers
         }
 
 
-
+        //Post Api:https://localhost:44362/api/customer/sendOtp
         [HttpPost("sendOtp")]
         public async Task<IActionResult> SendOtp([FromBody] RegisterRequest request)
         {
@@ -67,7 +64,7 @@ namespace SjxLogistics.Controllers
 
             if(response != "Fail")
             {
-                await AddData(otp);
+              await AddData(otp);
             }
             return Ok(response);
 
@@ -150,8 +147,10 @@ namespace SjxLogistics.Controllers
 
 
         //Get List of States
+    ////https://localhost:44362/api/customer/state
 
        [HttpGet("state")]
+
         public async Task<ActionResult<IEnumerable<State>>> GetStates()
         {
 
@@ -191,7 +190,7 @@ namespace SjxLogistics.Controllers
         }
 
         // Create customer after Otp Verification
-
+        //Post Api:https://localhost:44362/api/customer/customer
         [HttpPost("customer")]
         public async Task<IActionResult> CreateCustomer([FromBody] RegisterRequest request)
         {
@@ -278,6 +277,7 @@ namespace SjxLogistics.Controllers
         }
 
         // Get all existing customers
+        //Get Api:https://localhost:44362/api/customer/getAllCustomers
         [HttpGet("getAllCustomers")]
         public async Task<IActionResult> GetAllCustomerss()
         {
@@ -304,8 +304,9 @@ namespace SjxLogistics.Controllers
 
             }
 
-            // Customer Login Endpoint
-            [HttpPost("Login")]
+        // Customer Login Endpoint
+        //Post Api:https://localhost:44362/api/customer/Login
+        [HttpPost("Login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginRequest request)
         {
             var response = new ServiceResponses<User>();
