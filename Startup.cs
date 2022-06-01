@@ -1,5 +1,6 @@
 using ChurchAdmin.Context;
 using MailKit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,15 +12,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Schedular.Interface;
-using Schedular.Models;
+using OpenXmlPowerTools;
 using SjxLogistics.Components;
 using SjxLogistics.Controllers.AuthenticationComponent;
 using SjxLogistics.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Schedular
@@ -46,17 +48,15 @@ namespace Schedular
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
 
-            services.AddDbContext<SchedularDbContext>(options =>
+            services.AddDbContext<CustomerDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc();
-            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             services.AddMemoryCache();
             services.AddSession();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IpasswordHasher, BcryptPassHasher>();
             services.AddSingleton<AccessToken>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IMaillingService, MaillingService>();
             services.AddSingleton<TokkenGeneratorClass>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -64,7 +64,9 @@ namespace Schedular
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Schedular", Version = "v1" });
             });
         }
-        //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
+
+        ////HandleJWT
+        //Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(O =>
         //    {
         //    o.TokenValidationParameters = new TokenValidationParameters()
         //    {
@@ -75,21 +77,6 @@ namespace Schedular
         //        ValidateAudience = true
         //    };
         //});
-         //Api Requirement 
-        //    services.AddHttpContextAccessor();
-        //    services.AddMvc(option => option.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-
-        //// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        //services.AddSession(options =>
-        //    {
-        //        // Set a short timeout for easy testing.
-        //        Options.IdleTimeout = TimeSpan.FromMinutes(20);
-        //        options.Cookie.HttpOnly = true;
-        //        // Make the session cookie essential
-        //        options.Cookie.SameSite = SameSiteMode.None;
-        //        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        //        options.Cookie.IsEssential = true;
-        //    });
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
