@@ -54,7 +54,6 @@ namespace SjxLogistics.Controllers
         }
 
 
-        //Post Api:https://localhost:44362/api/customer/sendOtp
         [HttpPost("sendOtp")]
         public async Task<IActionResult> SendOtp([FromBody] RegisterRequest request)
         {
@@ -148,7 +147,6 @@ namespace SjxLogistics.Controllers
 
 
         //Get List of States
-        ////https://localhost:44362/api/customer/state
 
         [HttpGet("state")]
 
@@ -191,7 +189,6 @@ namespace SjxLogistics.Controllers
         }
 
         // Create customer after Otp Verification
-        //Post Api:https://localhost:44362/api/customer/customer
         [HttpPost("customer")]
         public async Task<IActionResult> CreateCustomer([FromBody] RegisterRequest request)
         {
@@ -312,7 +309,7 @@ namespace SjxLogistics.Controllers
             }
 
         // Customer Login Endpoint
-        //Post Api:https://localhost:44362/api/customer/Login
+
         [HttpPost("Login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginRequest request)
         {
