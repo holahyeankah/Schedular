@@ -6,7 +6,6 @@
         public string Messages { get; set; }
         public string Tokken { get; set; }
         public bool Success { get; set; }
-        public bool Status { get; set; }
         public T Data { get; set; }
     }
 }
