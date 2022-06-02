@@ -71,7 +71,7 @@ namespace SjxLogistics.Controllers
 
 
         }
-        [HttpPost]
+        [HttpPost("saveOtp")]
         public async Task<IActionResult> AddData(string otp)
         {
 
