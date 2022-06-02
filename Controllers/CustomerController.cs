@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using RestSharp;
 using Schedular.Request;
 using SjxLogistics.Components;
 using SjxLogistics.Controllers.AuthenticationComponent;
@@ -59,18 +60,18 @@ namespace SjxLogistics.Controllers
         {
             string otp = GenerateOtp(6);
             string mobileNo = request.PhoneNumber;
-            
+
             var response = SendSMS(mobileNo, otp);
 
-            if(response != "Fail")
+            if (response != "Fail")
             {
-              await AddData(otp);
+                await AddData(otp);
             }
             return Ok(response);
 
 
         }
-
+        [HttpPost]
         public async Task<IActionResult> AddData(string otp)
         {
 
@@ -108,14 +109,14 @@ namespace SjxLogistics.Controllers
 
 
 
-        public static string SendSMS(string phoneNumber, string otp)
+        string SendSMS(string phoneNumber, string otp)
         {
             string Username = "youremail@domain.com";
             string APIKey = "MyApiKey";
             string SenderName = "MyName";
             string Number = phoneNumber;
             string Message = "Your OTP code is - " + otp;
-            string URL = "http://api.urlname.in/send/?username=" + Username + 
+            string URL = "http://api.urlname.in/send/?username=" + Username +
                 "&hash=" + APIKey + "&sender=" + SenderName + "&numbers=" + Number + "&message=" + Message;
             string strResponce = GetResponse(URL);
             string msg = "";
@@ -130,7 +131,7 @@ namespace SjxLogistics.Controllers
             return msg;
         }
 
-        public static string GetResponse(string URL)
+         string GetResponse(string URL)
         {
             try
             {
@@ -147,9 +148,9 @@ namespace SjxLogistics.Controllers
 
 
         //Get List of States
-    ////https://localhost:44362/api/customer/state
+        ////https://localhost:44362/api/customer/state
 
-       [HttpGet("state")]
+        [HttpGet("state")]
 
         public async Task<ActionResult<IEnumerable<State>>> GetStates()
         {
@@ -261,19 +262,25 @@ namespace SjxLogistics.Controllers
 
         }
 
+
+
+
+
+
+
+
         //Api that return existing banks
-        public async Task<IActionResult> Index()
+        [HttpGet("bankList")]
+        public async Task<RestResponse> Index()
         {
-            List<Bank> bankList = new List<Bank>();
-            using (var httpClient = new HttpClient())
-            {
-                using (var response = await httpClient.GetAsync("https://wema-alatdev-apimgt.azure-api.net/alat-test/api/Shared/GetAllBanks"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    bankList = JsonConvert.DeserializeObject<List<Bank>>(apiResponse);
-                }
-            }
-            return Ok(bankList);
+            var client = new RestClient("https://wema-alatdev-apimgt.azure-api.net/alat-test/api/Shared/GetAllBanks");
+            var request = new RestRequest();
+            request.Method = Method.Get;
+            request.AddHeader("User-Agent", "Thunder Client (https://www.thunderclient.com)");
+            request.AddHeader("Accept", "*/*");
+            var response = await client.GetAsync(request);
+            return response;
+
         }
 
         // Get all existing customers
